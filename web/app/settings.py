@@ -30,6 +30,9 @@ INSTALLED_APPS = [
     #Local
     'src.users.apps.UsersConfig',
     'src.bank',
+
+    # 3rd party
+    'rest_framework',
 ]
 
 AUTH_USER_MODEL = "users.CustomUser"

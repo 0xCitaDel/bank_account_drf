@@ -1,7 +1,8 @@
-from django.db import models, transaction
-from app import settings
-import uuid
 import os
+import uuid
+from app import settings
+
+from django.db import models, transaction
 
 def customer_image_file_path(instance, filename):
     """Generate file path for new image"""
@@ -18,9 +19,10 @@ class Customer(models.Model):
     house = models.CharField(max_length=255)
     image = models.ImageField(null=True, upload_to=customer_image_file_path)
 
-    user = models.ForeignKey(
+    user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
+        primary_key=True
     )
 
     def __str__(self):

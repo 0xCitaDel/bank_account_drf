@@ -3,10 +3,9 @@ from django.urls import path, include
 from . import settings
 from django.conf.urls.static import static
 
-
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/bank/', include('src.bank.urls', namespace='api')),
+    path('api/v1/', include('src.bank.urls')),
 ]
 
 if settings.DEBUG:
