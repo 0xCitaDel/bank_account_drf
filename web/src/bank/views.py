@@ -1,8 +1,8 @@
-from .serializers import CustomerSerializer
-from .models import Customer
+from .serializers import CustomerSerializer, AccountSerializer
+from .models import Customer, Account
 
 from rest_framework.permissions import IsAuthenticated
-from rest_framework import viewsets
+from rest_framework import viewsets, mixins
 
 
 class CustomerViewSet(viewsets.ModelViewSet):
@@ -13,9 +13,24 @@ class CustomerViewSet(viewsets.ModelViewSet):
     queryset = Customer.objects.all()
 
     def perform_create(self, serializer):
-        """Create a new customer"""
         serializer.save(user=self.request.user)
 
     def get_queryset(self):
-        """Return object for current authenticated user only"""
+        return self.queryset.filter(user=self.request.user)
+
+
+class ActionViewSet(mixins.ListModelMixin,
+                    mixins.CreateModelMixin,
+                    mixins.DestroyModelMixin,
+                    viewsets.GenericViewSet):
+
+    serializer_class = AccountSerializer
+    # authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated, )
+    queryset = Account.objects.all()
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+    def get_queryset(self):
         return self.queryset.filter(user=self.request.user)
