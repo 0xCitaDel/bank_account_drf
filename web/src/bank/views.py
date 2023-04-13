@@ -2,7 +2,7 @@ from .serializers import CustomerSerializer, AccountSerializer
 from .models import Customer, Account
 
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.authentication import SessionAuthentication, TokenAuthentication
+from rest_framework.authentication import TokenAuthentication
 from rest_framework import viewsets, mixins
 
 
@@ -17,6 +17,7 @@ class CustomerViewSet(viewsets.ModelViewSet):
         serializer.save(user=self.request.user)
 
     def get_queryset(self):
+        print(self.request.user)
         return self.queryset.filter(user=self.request.user)
 
 
