@@ -46,6 +46,7 @@ class Account(models.Model):
 
 
 class Action(models.Model):
+
     amount = models.DecimalField(
         max_digits=12,
         decimal_places=2
@@ -55,7 +56,7 @@ class Action(models.Model):
     account = models.ForeignKey(
         Account,
         on_delete=models.CASCADE,
-        related_name='actions',
+        related_name='actions'
     )
 
     def __str__(self):

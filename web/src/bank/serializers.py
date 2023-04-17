@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Customer, Account
+from .models import Customer, Account, Action
 
 class CustomerSerializer(serializers.ModelSerializer):
     
@@ -22,3 +22,17 @@ class AccountSerializer(serializers.ModelSerializer):
         model = Account
         fields = ('id', 'user_id', 'balance', 'actions')
         read_only_fields = ('id', 'user_id', 'balance', 'actions')
+
+
+class ActionSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Action
+        fields = ('id', 'account', 'amount', 'date')
+        read_only_fields = ('id', 'date')
+
+    def create(self, validated_data):
+        validated_data['account'].balance += validated_data['amount']
+        validated_data['account'].save()
+        return super().create(validated_data)
+
