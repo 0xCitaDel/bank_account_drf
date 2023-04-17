@@ -2,7 +2,7 @@ from rest_framework import serializers
 from .models import Customer, Account
 
 class CustomerSerializer(serializers.ModelSerializer):
-
+    
     class Meta:
         model = Customer
         fields = ('user_id', 'first_name', 'last_name',
@@ -11,7 +11,7 @@ class CustomerSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         validated_data['user_id'] = self.context['request'].user.id
-        return super(CustomerSerializer, self).create(validated_data)
+        return super().create(validated_data)
 
 
 class AccountSerializer(serializers.ModelSerializer):
