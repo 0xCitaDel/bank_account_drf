@@ -1,6 +1,8 @@
 from .serializers import CustomerSerializer, AccountSerializer, ActionSerializer
 from .models import Customer, Account, Action
 
+from rest_framework.response import Response
+from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 from rest_framework import viewsets, mixins, generics
@@ -56,3 +58,18 @@ class ActionViewSet(mixins.ListModelMixin,
 
     def get_queryset(self):
         return self.queryset.filter(account__user=self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        try:
+            account = Account.objects.filter(
+                user=self.request.user).get(pk=self.request.data['account'])
+        except:
+            content = {'error': 'Account not found'}
+            return Response(content, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer.save(account=account)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)

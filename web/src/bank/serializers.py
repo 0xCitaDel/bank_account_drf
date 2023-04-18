@@ -16,7 +16,7 @@ class CustomerSerializer(serializers.ModelSerializer):
 
 class AccountSerializer(serializers.ModelSerializer):
 
-    actions = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    actions = serializers.StringRelatedField(many=True, read_only=True)
 
     class Meta:
         model = Account
@@ -26,13 +26,23 @@ class AccountSerializer(serializers.ModelSerializer):
 
 class ActionSerializer(serializers.ModelSerializer):
 
+    def __init__(self, *args, **kwargs):
+        super(ActionSerializer, self).__init__(*args, **kwargs)
+        if 'request' in self.context:
+            self.fields['account'].queryset = self.fields['account']\
+                .queryset.filter(user=self.context['view'].request.user)
+
     class Meta:
         model = Action
         fields = ('id', 'account', 'amount', 'date')
         read_only_fields = ('id', 'date')
 
     def create(self, validated_data):
-        validated_data['account'].balance += validated_data['amount']
-        validated_data['account'].save()
+        if validated_data['amount'] > 0:
+            validated_data['account'].balance += validated_data['amount']
+            validated_data['account'].save()
+        else:
+            raise serializers.ValidationError(('Amonut must be positive'))
+
         return super().create(validated_data)
 
